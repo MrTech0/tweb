@@ -1,0 +1,101 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+form {
+    border: 3px solid #f1f1f1;
+}
+
+input[type=text],
+input[type=password],
+input[type=textarea] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+label {
+    display: block;
+}
+
+button {
+    background-color: #04AA6D;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+.cancelbtn {
+    width: auto;
+    padding: 10px 18px;
+    background-color: #f44336;
+}
+
+.imgcontainer {
+    text-align: center;
+    margin: 24px 0 12px 0;
+}
+
+img.avatar {
+    width: 40%;
+    border-radius: 50%;
+}
+
+.container {
+    padding: 16px;
+}
+
+span.psw {
+    float: right;
+    padding-top: 16px;
+}
+
+/* Change styles for span and cancel button on extra small screens */
+@media screen and (max-width: 300px) {
+    span.psw {
+        display: block;
+        float: none;
+    }
+
+    .cancelbtn {
+        width: 100%;
+    }
+}
+
+/* Estilo para los elementos p con clase "correcte" */
+p.correcte {
+    /* Utilizamos una unidad rem para que el tamaño sea relativo al tamaño de la fuente */
+    border-radius: 2rem;
+    /* Utilizamos flex para alinear los elementos dentro del p */
+    display: flex;
+    /* Centramos los elementos dentro del p */
+    align-items: center;
+    border-color: darkgreen;
+    background-color: lightgreen;
+    border-style: solid;
+    padding: 1rem;
+}
+
+/* Estilo para los elementos p con clase "fallo" */
+p.fallo {
+    /* Utilizamos una unidad rem para que el tamaño sea relativo al tamaño de la fuente*/
+    border-radius: 2rem;
+    /* Utilizamos flex para alinear los elementos dentro del p */
+    display: flex;
+    /* Centramos los elementos dentro del p*/
+    align-items: center;
+    border-color: darkred;
+    background-color: lightcoral;
+    border-style: solid;
+    padding: 1rem;
+}
