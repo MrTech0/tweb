@@ -1,27 +1,51 @@
 <?php
+session_regenerate_id();
+session_start();
 
 //Incluimos el archivo de funciones
 include_once "./auth/functions.php";
 include_once "./auth/authFunctions.php";
 
-// Iniciamos la sesion
-session_regenerate_id();
-session_start();
-
-// Declaramos las variables a utilizar
-$uname = "";
-$pass = "";
-
 //Conexión a la base de datos
 $pdo = dbconnect();
+$nom = "";
+$pass = "";
+
+// if (isset($_POST['submit'])) {
+//   $username = $_POST['username'];
+//   $password = $_POST['password'];
+
+  
+//   // Comprobar que el usuario y la contraseña son correctos
+//   if ($username == 'usuario' && $password == '123') {
+//     // Iniciar sesión y redirigir al usuario a la página principal
+//     $_SESSION['username'] = $username;
+//     header('Location: index.php');
+//     exit();
+//   } else {
+//     // Si las credenciales no son correctas, mostrar un mensaje de error
+//     $error = 'Usuario o contraseña incorrectos';
+//   }
+// }
+
+
+// Iniciamos la sesion
+
+
+
+// Declaramos las variables a utilizar
+
 
 // Verificamos si el usuario existe realmente
 
-if (isset($_POST["uname"]) and isset($_POST["pass"])) {
-    $uname = $_POST["uname"];
+if (isset($_POST["nom"]) and isset($_POST["pass"])) {
+    
+  echo "step 1";
+  $nom = $_POST["nom"];
     $pass = $_POST["pass"];
-
-    $check = userVerify($pdo, $uname, $pass);
+  echo "step2";
+    $check = userVerify($pdo, $nom, $pass);
+    echo "step3";
 }
 
 // Variable para guardar si el login del usuario a sido correcto o no
@@ -29,11 +53,16 @@ $check;
 
 // Si el login a sido correcto guardamos los datos en la sesión
 if ($check == true) {
+  echo "step4";
+    $_SESSION['nom'] = $nom;
+    echo "step5";
+    $_SESSION['userid'] = userId($pdo, $nom);
+    echo "step6";
+    header('Location: index.php');
+    //$_SESSION['avatar'] = userImg($pdo, $nom);
+};
 
-    $_SESSION['username'] = $uname;
-    $_SESSION['userId'] = userId($pdo, $uname);
-    //$_SESSION['avatar'] = userImg($pdo, $uname);
-}
+
 
 ?>
 
@@ -41,41 +70,39 @@ if ($check == true) {
 <html>
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="./authStyle.css" rel="stylesheet" type="text/css">
+  <title>Iniciar sesión</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
+<?php
+var_dump($_POST);
+?>
+ 
 <body>
-
-    <h2>Formulari de login</h2>
-
-    <?php
-    //Comprobamos si se ha podido iniciar sesión
-    if (isset($check)) {
-        if ($check == true) {
-            echo "<p class='correcte'> Estas loguejat correctament. Redirigin...</p>";
-            echo "<meta http-equiv='refresh' content='3;url=../index.php'>";
-        } else {
-            echo "<p class='fallo'> ERROR: Revisa l'usuari/contraseña. Recarregant...</p>";
-            echo "<meta http-equiv='refresh' content='3;url=login.php'>";
-        }
-    }
-    ?>
-
-    <form action="#" method="post">
-        <div class="container">
-            <label for="uname"><b>Usuari</b></label>
-            <input type="text" placeholder="Posa el Usuari" name="uname" required>
-
-            <label for="pass"><b>Contrasenya</b></label>
-            <input type="password" placeholder="Posa la Contrasenya" name="pass" required>
-
-            <button type="submit">Login</button>
-            <label for="ncompte"><b>No tens compte?</b></label>
-            <p><a href="./register.php">Crea'n un aquí</a></p>
-        </div>
+  <div class="container">
+    <h1>Iniciar sesión</h1>
+    <?php if (isset($error)) {
+      echo '<p class="error">' . $error . '</p>';
+    } ?>
+    <form method="post" action="">
+      <div class="form-group">
+        <label for="nom">Usuario:</label>
+        <input type="text" id="nom" name="nom">
+      </div>
+      <div class="form-group">
+        <label for="pass">Contraseña:</label>
+        <input type="password" id="pass" name="pass">
+      </div>
+      <div class="form-group">
+        <input type="submit" name="submit" value="Iniciar sesión">
+      </div>
     </form>
-
+    <form method="post" action="register.php">
+      <div class="form-group">
+        <input type="submit" name="submit" value="Registrarse">
+      </div>
+    </form>
+  </div>
 </body>
 
 </html>
