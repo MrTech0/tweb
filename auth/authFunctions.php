@@ -8,7 +8,7 @@
  */
 function userExist($pdo, $usuari)
 {
-    $sql = "SELECT id FROM logins WHERE Nom = ?";
+    $sql = "SELECT id FROM usuarios WHERE usuario = ?";
     $statement = $pdo->prepare($sql);
     $statement->execute([trim($usuari)]);
     $resultat = $statement->fetch();
@@ -28,7 +28,7 @@ function userExist($pdo, $usuari)
  */
 function userId($pdo, $usuari)
 {
-    $sql = "SELECT id FROM logins WHERE Nom = ?";
+    $sql = "SELECT id FROM usuarios WHERE usuario = ?";
     $statement = $pdo->prepare($sql);
     $statement->execute([trim($usuari)]);
     return $statement->fetchColumn();
@@ -67,20 +67,22 @@ function is_valid_email($str)
  * @param string $imatge nombre del archivo del Avatar
  * @return bool resultado de la operación
  */
-function addUser($pdo, $nom, $descripcio, $pass, $avatar)
+function addUser($pdo, $nom, $pass)
 {
 
     if (userExist($pdo, $nom)) {
         return false;
     };
+
     // Primero se crea una consulta SQL para insertar el registro con los datos especificados
-    $consultaSQL = "INSERT INTO logins(Nom, Descripcio, Pass, Avatar) values(?,?,?,?)";
+    $consultaSQL = "INSERT INTO usuarios(usuario, contrasena) values(?,?)";
 
     // Luego se prepara la consulta utilizando el objeto PDO
     $sentencia = $pdo->prepare($consultaSQL);
 
+
     // Se ejecuta la consulta, pasando los datos como parámetros
-    $sentencia->execute([trim($nom), $descripcio, password_hash($pass, PASSWORD_DEFAULT), $avatar]);
+    $sentencia->execute([$nom, password_hash($pass, PASSWORD_DEFAULT)]);
 
     // Se devuelve true si se agregó y false en el caso que y/o existe previamente
 
@@ -99,7 +101,7 @@ function userVerify($pdo, $nom, $passCheck)
     if (!userExist($pdo, $nom)) {
         return false;
     } else {
-        $sql = "SELECT Pass FROM logins WHERE Nom = ?";
+        $sql = "SELECT contrasena FROM usuarios WHERE usuario = ?";
         $statement = $pdo->prepare($sql);
         $statement->execute([trim($nom)]);
         $hashPass = $statement->fetchColumn();

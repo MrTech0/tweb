@@ -7,8 +7,8 @@
 function dbconnect()
 {
     $servername = "localhost";
-    $username = "taster";
-    $password = "thos";
+    $username = "dbadmin";
+    $password = "Taster01";
     $dbname = "taster";
 
     try {
@@ -28,7 +28,7 @@ function dbconnect()
  */
 function data($pdo)
 {
-    $sql = "SELECT * FROM dtItems";
+    $sql = "SELECT * FROM usuarios where ";
     $statement = $pdo->prepare($sql);
     $statement->execute();
 
