@@ -18,6 +18,7 @@ body {
     padding: 20px;
   }
   
+
   .vm-container {
     display: flex;
     flex-wrap: wrap;
@@ -131,3 +132,8 @@ body {
   input[type="submit"]:hover {
     background-color: #555555;
   }
+
+  .black {
+    color: black;
+  }
+  

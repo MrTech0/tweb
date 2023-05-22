@@ -40,12 +40,12 @@ $pass = "";
 
 if (isset($_POST["nom"]) and isset($_POST["pass"])) {
     
-  echo "step 1";
+  
   $nom = $_POST["nom"];
     $pass = $_POST["pass"];
-  echo "step2";
+  
     $check = userVerify($pdo, $nom, $pass);
-    echo "step3";
+    
 }
 
 // Variable para guardar si el login del usuario a sido correcto o no
@@ -74,9 +74,7 @@ if ($check == true) {
   <link rel="stylesheet" href="style.css">
 </head>
 
-<?php
-var_dump($_POST);
-?>
+
  
 <body>
   <div class="container">

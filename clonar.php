@@ -1,10 +1,10 @@
 <?php
 session_start();
-if (!isset($_SESSION['username'])) {
+if (!isset($_SESSION['nom'])) {
     header('Location: login.php');
     exit();
 }
-var_dump($_POST);
+
 // Require the autoloader
 require_once 'vendor/autoload.php';
 
@@ -23,31 +23,28 @@ $credentials = [
     'port' => '8006',
 ];
 
-// Then simply pass your credentials when creating the API client object.
+// Conexión a Proxmox para obtener el contenido del Pool plantillas
 $proxmox = new Proxmox($credentials);
-$pool_id = "Plantillas"; // Reemplaza con el ID del pool que deseas auditar
+$pool_id = "Plantillas";
 $allNodes = $proxmox->get("/pools/$pool_id");
 
-// print_r($allNodes);
 
-/*$Clonacion = array(
-    array("newid" => 1, "node" => 1, "vmid" => 1, "full" => true, "name" => "copia", "pool" => "hhyomin")
-);*/
-
+// Recibe por post la información necesaria para clonar la máquina virtual
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-   $nuevaid = $proxmox ->get("/cluster/nextid");
+    $nuevaid = $proxmox->get("/cluster/nextid");
     $action = $_POST['action'];
     $node = $_POST['node'];
     $id = $_POST['id'];
     $vmid = $_POST['vmid'];
-    $usuario = 'hhyomin';
+    $usuario = str_replace("@", "_", $_SESSION['nom']);
     $vmname = $_POST['vmname'];
-    $Clonacion = 
+    $Clonacion =
         array("newid" => $nuevaid['data'], "node" => $node, "full" => true, "name" => "$vmname", "pool" => "$usuario");
     if ($action == 'Clonar') {
         // realizar la acción de arrancar la máquina con ID $node_id
-        var_dump($Clonacion);
+
         $proxmox->create("/nodes/$node/qemu/$vmid/clone", $Clonacion);
+        header('Location: index.php');
     }
 }
 
@@ -81,17 +78,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 
 <body>
+    <header>
+        <h1>Taster - Clonación</h1>
 
-<?php // var_dump($allNodes);?>
-
-    <form action="index.php"><button>volver</button></form>
+        <form method="post" action="close.php">
+            <button type="submit" class="logout-button">Cerrar sesión</button>
+        </form>
+    </header>
+    <form action="index.php">
+        <button class="vm-button ">volver</button>
+    </form>
 
     <div class="vm-container">
         <h3>Plantillas Disponibles</h3>
 
-
-
-        <?php foreach ($allNodes['data']['members'] as $node) { ?>
+        <?php
+        // Por cada máquina dentro del pool se hace un echo con la información correspondiente y los botones para interactuar
+        foreach ($allNodes['data']['members'] as $node) {
+        ?>
             <div class="vm-box">
                 <div class="vm-title">
                     <h4><?php echo $node['name']; ?></h4>
@@ -113,15 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
             </div>
         <?php } ?>
-
-        <?php
-       // var_dump($allNodes);
-        ?>
     </div>
-
-
-
-
 </body>
 
 </html>

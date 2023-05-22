@@ -68,16 +68,19 @@ $user = $_SESSION['nom'];
     <header>
         <h1>Taster</h1>
 
-        <form method="post" action="login.php">
+        <form method="post" action="close.php">
+            <h2 class="black">Bienvenido, <?php echo $user; ?></h2>
             <button type="submit" class="logout-button">Cerrar sesión</button>
         </form>
     </header>
 
     <section>
-        <h2>Bienvenido, <?php echo $user; ?></h2>
 
+        <form action="clonar.php">
+            <h2 class="black">Crea una nueva máquina virtual</h2>
+            <button class="vm-button">Crear</button>
+        </form>
 
-        <form action="clonar.php"><button>CLONAR</button></form>
 
         <?php
 
@@ -99,14 +102,15 @@ $user = $_SESSION['nom'];
 
         // Then simply pass your credentials when creating the API client object.
         $proxmox = new Proxmox($credentials);
-        $pool_id = "hhyomin"; // Reemplaza con el ID del pool que deseas auditar
+        $poolname = str_replace("@", "_", $user);
+        $pool_id = $poolname; // Reemplaza con el ID del pool que deseas auditar
         $allNodes = $proxmox->get("/pools/$pool_id");
 
-        //    print_r($allNodes);
+
         ?>
 
         <div class="vm-container">
-            <h3>Tus máquians virtuales</h3>
+            <h3>Tus máquinas virtuales</h3>
 
             <?php foreach ($allNodes['data']['members'] as $node) { ?>
                 <div class="vm-box">
@@ -136,12 +140,23 @@ $user = $_SESSION['nom'];
 
                             </form>
                         <?php } ?>
+                        <form method="POST" action="">
+                            <input type="hidden" name="action" value="Eliminar">
+                            <input type="hidden" name="node" value="<?php echo $node['node']; ?>">
+                            <input type="hidden" name="id" value="<?php echo $node['name']; ?>">
+                            <input type="hidden" name="vmid" value="<?php echo str_replace("qemu/", "", $node['id']); ?>">
+                            <button class="vm-button vm-stop" type="submit">Eliminar</button>
+
+                        </form>
+
+
+
 
                         <?php
                         // Generar la URL del iframe con los parámetros necesarios
                         $iframe_url = "https://pve1.taster.local:8006/?console=kvm&novnc=1&vmid=" . str_replace("qemu/", "", $node['id']) . "&vmname=" . $node['name'] . "&node=" . $node['node'] . "&resize=off&cmd=";
                         ?>
-                        <button onclick="window.open('<?php echo $iframe_url; ?>', '_blank')">Abrir en nueva pestaña</button>
+                        <button onclick="window.open('<?php echo $iframe_url; ?>', '_blank')" class="vm-button">Abrir en nueva pestaña</button>
 
                     </div>
 
@@ -163,32 +178,27 @@ $user = $_SESSION['nom'];
                         'password' => 'H0laMund0*',
                         'realm' => 'pam',
                     );
-                    var_dump($_POST);
+
                     // realizar la acción de arrancar la máquina con ID $node_id
                     $proxmox->create("/nodes/$node/qemu/$vmid/status/start");
-                    //var_dump($ticket);
 
                     // Generar la URL del iframe con los parámetros necesarios
                     $iframe_url = "https://pve1.taster.local:8006/?console=kvm&novnc=1&vmid=$vmid&vmname=$nombre&node=$node&resize=off&cmd=";
-
-                    // Imprimir el código HTML del iframe
-                    //     echo "<iframe src=\"$iframe_url\" width=\"800\" height=\"600\" frameborder=\"0\"></iframe>";
-
-                    //echo '<script>window.open("' . $iframe_url . '", "_blank");</script>';
-
 
                     unset($_POST['action']);
                 } else if ($action == 'Apagar') {
                     // realizar la acción de apagar la máquina con ID $node_id
                     $proxmox->create("/nodes/$node/qemu/$vmid/status/stop");
                     unset($_POST['action']);
+                } else if ($action == 'Eliminar') {
+                    $proxmox->delete("/nodes/$node/qemu/$vmid");
+                    unset($_POST['action']);
                 }
             };
             ?>
 
-
-
         </div>
+
     </section>
 </body>
 
